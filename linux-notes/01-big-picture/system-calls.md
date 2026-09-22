@@ -6,7 +6,7 @@ related: ["[[levels-of-abstraction]]", "[[kernel-overview]]", "[[user-space-vs-k
 
 # System Calls and Support
 
-Every time a program opens a file, allocates memory, forks a child process, or sends a packet — it's making a system call. There's no other way for user-space code to get the kernel to do anything. Syscalls are the entire interface between the two worlds.
+Every time a program opens a file, allocates memory, forks a child process, or sends a packet - it's making a system call. There's no other way for user-space code to get the kernel to do anything. Syscalls are the entire interface between the two worlds.
 
 ## What actually happens during a syscall
 
@@ -40,20 +40,20 @@ Every syscall has a number. On x86-64: `read`=0, `write`=1, `open`=2, `fork`=57,
 | `close(fd)` | Releases the file descriptor |
 | `fork()` | Copies the current process. Returns 0 in child, child's PID in parent |
 | `execve(path, argv, envp)` | Replaces the process image with a new program |
-| `mmap(...)` | Maps memory into address space — this is what `malloc` calls eventually |
+| `mmap(...)` | Maps memory into address space - this is what `malloc` calls eventually |
 | `exit(status)` | Terminates the process |
 
 The fork+exec pattern is how every new program gets launched. The shell forks itself, gets a child process, and calls `execve` in the child to replace it with whatever you typed. The original shell sits there waiting with `wait()`.
 
 ## glibc
 
-You almost never call syscalls directly. glibc wraps all of them — proper C functions, error handling, sets `errno` on failure, returns something sensible. `fopen()` calls `open`. `malloc()` eventually calls `mmap` or `brk`. Python, Ruby, Go — their runtimes are all sitting on top of the same foundation.
+You almost never call syscalls directly. glibc wraps all of them - proper C functions, error handling, sets `errno` on failure, returns something sensible. `fopen()` calls `open`. `malloc()` eventually calls `mmap` or `brk`. Python, Ruby, Go - their runtimes are all sitting on top of the same foundation.
 
 You *can* call syscalls directly using the `syscall()` wrapper in `<unistd.h>` or with inline assembly. It works. It's just non-portable and annoying, and you're giving up everything the library does for you.
 
 ## strace
 
-`strace` shows you every syscall a process makes, with arguments and return values. It's one of the better debugging tools on Linux because it's honest — it shows you what the program is actually doing, not what the source code claims it's doing.
+`strace` shows you every syscall a process makes, with arguments and return values. It's one of the better debugging tools on Linux because it's honest - it shows you what the program is actually doing, not what the source code claims it's doing.
 
 ```bash
 strace ls /tmp

@@ -6,7 +6,7 @@ related: ["[[user-space-vs-kernel-space]]", "[[kernel-overview]]"]
 
 # Users
 
-The kernel has never heard of `valen`. It knows UID 1000. All permission decisions — who can read this file, who can kill that process, who can bind to this port — are made on numbers, not names. The mapping from names to numbers in `/etc/passwd` is purely for human consumption; the kernel never touches it.
+The kernel has never heard of `valen`. It knows UID 1000. All permission decisions - who can read this file, who can kill that process, who can bind to this port - are made on numbers, not names. The mapping from names to numbers in `/etc/passwd` is purely for human consumption; the kernel never touches it.
 
 ## UIDs and what the kernel tracks
 
@@ -15,10 +15,10 @@ Every process carries three UIDs:
 | UID type | Purpose |
 |---|---|
 | Real UID (ruid) | Who owns this process |
-| Effective UID (euid) | What permissions it actually runs with — this is what the kernel checks |
+| Effective UID (euid) | What permissions it actually runs with - this is what the kernel checks |
 | Saved UID (suid) | Allows controlled transitions back to a previous privilege level |
 
-Most of the time all three are the same. They come apart when a setuid binary runs — `sudo` is the obvious example — or when a process deliberately drops privileges.
+Most of the time all three are the same. They come apart when a setuid binary runs - `sudo` is the obvious example - or when a process deliberately drops privileges.
 
 ## Root is just UID 0
 
@@ -31,7 +31,7 @@ Every inode stores an owner UID, a group GID, and nine permission bits. When a p
 ```mermaid
 flowchart TD
     A["Process tries to open file"] --> B{"euid == 0?"}
-    B -->|Yes| ALLOW["Allow — root skips permission checks"]
+    B -->|Yes| ALLOW["Allow - root skips permission checks"]
     B -->|No| C{"euid == file owner UID?"}
     C -->|Yes| OWN["Apply owner bits rwx------"]
     C -->|No| D{"egid == file group GID?"}
@@ -43,11 +43,11 @@ The same logic applies to signals: sending `SIGKILL` to a process you don't own 
 
 ## sudo and why it's different from being root
 
-`sudo` is a setuid binary — when you execute it, its effective UID becomes 0 regardless of who's running it. It then checks `/etc/sudoers` to decide whether to actually let you run something as root. If yes, it runs the command. The whole thing is logged.
+`sudo` is a setuid binary - when you execute it, its effective UID becomes 0 regardless of who's running it. It then checks `/etc/sudoers` to decide whether to actually let you run something as root. If yes, it runs the command. The whole thing is logged.
 
 Running permanently as root is different. There's no logging, no friction, no per-command authorization. Every command runs with full privileges. Every typo, every script, every tool you invoke runs as root. The blast radius of a mistake is the entire system.
 
-The principle of least privilege is the answer to this: run with only the access you actually need. It's why services have their own unprivileged users — `www-data`, `postgres`, `nobody`. If a web server process gets compromised, the attacker gets `www-data`'s access, which can't touch `/etc/shadow` or load kernel modules. That's the point.
+The principle of least privilege is the answer to this: run with only the access you actually need. It's why services have their own unprivileged users - `www-data`, `postgres`, `nobody`. If a web server process gets compromised, the attacker gets `www-data`'s access, which can't touch `/etc/shadow` or load kernel modules. That's the point.
 
 ## exam-note
 

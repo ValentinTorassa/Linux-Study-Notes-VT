@@ -1,6 +1,6 @@
 # linux-study-vault
 
-Personal notes on Linux internals, written while studying for the LFCA certification. Not a tutorial. Not a wiki. Just notes — the kind you write when you're trying to actually understand something, not just memorize it.
+Personal notes on Linux internals, written while studying for the LFCA certification. Not a tutorial. Not a wiki. Just notes - the kind you write when you're trying to actually understand something, not just memorize it.
 
 Built as an Obsidian vault. Open the `linux-notes/` folder as a vault.
 
@@ -34,15 +34,15 @@ linux-notes/
 
 The vault uses a few community plugins. Install them through Obsidian → Settings → Community Plugins → Browse:
 
-- **Dataview** — query notes as a database
-- **Templater** — smarter templates
-- **Excalidraw** — diagrams
-- **Advanced Canvas** — whiteboard / flowcharts
-- **Mermaid Tools** — diagram toolbar
-- **Style Settings** — theme customization
-- **Spaced Repetition** — flashcard review from exam-note sections
+- **Dataview** - query notes as a database
+- **Templater** - smarter templates
+- **Excalidraw** - diagrams
+- **Advanced Canvas** - whiteboard / flowcharts
+- **Mermaid Tools** - diagram toolbar
+- **Style Settings** - theme customization
+- **Spaced Repetition** - flashcard review from exam-note sections
 
-Plugin manifests are versioned so Obsidian knows what to install. The compiled plugin files are gitignored — you'll need to reinstall them after cloning.
+Plugin manifests are versioned so Obsidian knows what to install. The compiled plugin files are gitignored - you'll need to reinstall them after cloning.
 
 ## Notes format
 

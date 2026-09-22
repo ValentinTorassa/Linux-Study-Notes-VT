@@ -3,14 +3,14 @@
 .AppleDouble
 .LSOverride
 
-# Obsidian — ephemeral state (don't version these)
+# Obsidian - ephemeral state (don't version these)
 **/.obsidian/workspace.json
 **/.obsidian/workspace-mobile.json
 **/.obsidian/cache
 **/.obsidian/graph.json
 
-# Obsidian — plugin compiled files (large blobs, reinstallable)
-# manifest.json is kept — it records which plugins/versions are installed
+# Obsidian - plugin compiled files (large blobs, reinstallable)
+# manifest.json is kept - it records which plugins/versions are installed
 **/.obsidian/plugins/*/main.js
 **/.obsidian/plugins/*/styles.css
 

@@ -6,12 +6,12 @@ related: ["[[kernel-overview]]", "[[user-space-vs-kernel-space]]", "[[system-cal
 
 # Levels and Layers of Abstraction in a Linux System
 
-The reason you can call `write()` in a program and have it work on any Linux machine — regardless of what disk is underneath, what filesystem is mounted, whether it's writing to a pipe or a file or a socket — is that every layer in the stack only talks to the layer directly below it. Your program never knows what hardware it's running on. That's the point.
+The reason you can call `write()` in a program and have it work on any Linux machine - regardless of what disk is underneath, what filesystem is mounted, whether it's writing to a pipe or a file or a socket - is that every layer in the stack only talks to the layer directly below it. Your program never knows what hardware it's running on. That's the point.
 
 ```mermaid
 graph TD
     A["User Programs\nbash · vim · Firefox · your code"]
-    B["C Standard Library\nglibc — wraps syscalls into proper C functions"]
+    B["C Standard Library\nglibc - wraps syscalls into proper C functions"]
     C["System Call Interface\nopen · read · write · fork · mmap · execve"]
     D["Kernel\nprocess mgmt · memory · VFS · networking"]
     E["Device Drivers\nhardware abstraction · kernel modules"]
@@ -29,9 +29,9 @@ graph TD
 
 The system call interface is the line that actually matters. Above it is user space. Below it is kernel space. Everything about how Linux keeps processes isolated from each other and from hardware comes down to that line holding.
 
-User-space code runs at CPU ring 3. Instructions that touch hardware require ring 0. If your program tries to access a hardware port or a physical memory address it doesn't own, the CPU raises a fault before anything happens. The kernel catches it, kills the process. Not a policy someone wrote down — the silicon does it.
+User-space code runs at CPU ring 3. Instructions that touch hardware require ring 0. If your program tries to access a hardware port or a physical memory address it doesn't own, the CPU raises a fault before anything happens. The kernel catches it, kills the process. Not a policy someone wrote down - the silicon does it.
 
-To cross legitimately, you go through a system call: the program puts a syscall number in a register, executes the `syscall` instruction, and the CPU hands control to the kernel. The kernel does the work. Control comes back. The user program was never in ring 0 — it just waited.
+To cross legitimately, you go through a system call: the program puts a syscall number in a register, executes the `syscall` instruction, and the CPU hands control to the kernel. The kernel does the work. Control comes back. The user program was never in ring 0 - it just waited.
 
 ```mermaid
 graph LR
@@ -43,7 +43,7 @@ graph LR
         K["Kernel handler"]
     end
     P -->|"call open()"| L
-    L -->|"syscall instruction — mode switch"| K
+    L -->|"syscall instruction - mode switch"| K
     K -->|"return fd"| L
     L --> P
 ```

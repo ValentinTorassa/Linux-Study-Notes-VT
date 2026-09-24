@@ -47,3 +47,9 @@ Plugin manifests are versioned so Obsidian knows what to install. The compiled p
 ## Notes format
 
 Each note has minimal frontmatter (title, tags, related), prose where the topic has explanation to it, diagrams where the concept genuinely needs a visual, and an `exam-note` section at the bottom flagging anything specifically tested on the LFCA.
+
+## License
+
+These notes are licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE):
+you can share and adapt them as long as you give credit.
+

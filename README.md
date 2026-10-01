@@ -4,52 +4,69 @@ Personal notes on Linux internals, written while studying for the LFCA certifica
 
 Built as an Obsidian vault. Open the `linux-notes/` folder as a vault.
 
-## Structure
+## What's written so far
+
+One section: **01 - big picture**, six notes in `linux-notes/01-big-picture/`.
+
+| Note | What it covers |
+| --- | --- |
+| [Levels and Layers of Abstraction in a Linux System](linux-notes/01-big-picture/levels-of-abstraction.md) | The stack from user programs down to hardware, and the system call line between user space and the kernel. |
+| [Kernel: Process Management, Memory Management, Device Drivers](linux-notes/01-big-picture/kernel-overview.md) | The kernel's three jobs, and why Linux is a monolithic kernel with loadable modules. |
+| [User Space vs Kernel Space](linux-notes/01-big-picture/user-space-vs-kernel-space.md) | Memory layout, what isolation means in practice, kernel panics. |
+| [System Calls and Support](linux-notes/01-big-picture/system-calls.md) | What happens during a syscall, the ones worth knowing, glibc, strace. |
+| [Users](linux-notes/01-big-picture/users-and-root.md) | UIDs, root as UID 0, file permissions, sudo. |
+| [UNIX, MINIX, Distros](linux-notes/01-big-picture/unix-history.md) | Bell Labs, Minix and the 386, what a distribution is, POSIX. |
+
+New notes start from [`linux-notes/_templates/note-template.md`](linux-notes/_templates/note-template.md).
+
+Links between notes are Obsidian wikilinks (`[[system-calls]]`), so they work inside the vault but not on GitHub.
+
+## Planned sections
+
+Not written yet. Each one becomes a folder under `linux-notes/` when its first note lands.
 
 ```
-linux-notes/
-  00-index/               entry points and maps
-  01-big-picture/         abstraction layers, kernel overview, Unix history
-  02-commands-and-shell/
-  03-devices/
-  04-disks-and-filesystems/
-  05-kernel-boot/
-  06-user-space/
-  07-system-configuration/
-  08-processes-and-resources/
-  09-networking/
-  10-network-services/
-  11-shell-scripting/
-  12-moving-files/
-  13-user-environments/
-  14-linux-desktop/
-  15-development-tools/
-  16-compiling-software/
-  17-advanced-topics/
-  _templates/             note template
-  _meta/                  local style guide (gitignored)
+00-index/                    entry points and maps, once there is more than one section
+02-commands-and-shell/
+03-devices/
+04-disks-and-filesystems/
+05-kernel-boot/
+06-user-space/
+07-system-configuration/
+08-processes-and-resources/
+09-networking/
+10-network-services/
+11-shell-scripting/
+12-moving-files/
+13-user-environments/
+14-linux-desktop/
+15-development-tools/
+16-compiling-software/
+17-advanced-topics/
 ```
 
 ## Plugins
 
-The vault uses a few community plugins. Install them through Obsidian → Settings → Community Plugins → Browse:
+Two community plugins are enabled in the vault (`linux-notes/.obsidian/community-plugins.json`):
+
+- **Templater** - smarter templates
+- **Style Settings** - theme customization
+
+Manifests for five more are versioned, but they are not enabled yet:
 
 - **Dataview** - query notes as a database
-- **Templater** - smarter templates
 - **Excalidraw** - diagrams
 - **Advanced Canvas** - whiteboard / flowcharts
 - **Mermaid Tools** - diagram toolbar
-- **Style Settings** - theme customization
 - **Spaced Repetition** - flashcard review from exam-note sections
 
-Plugin manifests are versioned so Obsidian knows what to install. The compiled plugin files are gitignored - you'll need to reinstall them after cloning.
+Install them through Obsidian → Settings → Community Plugins → Browse. The manifests tell Obsidian which plugins and versions to install; the compiled plugin files are gitignored, so you'll need to reinstall them after cloning.
 
 ## Notes format
 
-Each note has minimal frontmatter (title, tags, related), prose where the topic has explanation to it, diagrams where the concept genuinely needs a visual, and an `exam-note` section at the bottom flagging anything specifically tested on the LFCA.
+Each note has minimal frontmatter (title, tags, related), prose where the topic has explanation to it, Mermaid diagrams where the concept genuinely needs a visual, an `exam-note` section flagging anything specifically tested on the LFCA, and a closing list of related notes.
 
 ## License
 
 These notes are licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE):
 you can share and adapt them as long as you give credit.
-

@@ -70,3 +70,16 @@ Each note has minimal frontmatter (title, tags, related), prose where the topic 
 
 These notes are licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE):
 you can share and adapt them as long as you give credit.
+
+## Dónde más viven estas notas
+
+La sección **01 - big picture** de estas notas se adaptó y tradujo al español
+en Open Security Labs, como el lab
+[Del comando al kernel: capas, syscalls y strace](https://securitylabs.valentorassa.com/labs/linux-real/del-comando-al-kernel/)
+(fuente en
+[`Open-Security-Labs`](https://github.com/ValentinTorassa/Open-Security-Labs/blob/main/src/content/labs/linux-real/del-comando-al-kernel.mdx)).
+Ahí también está la [página de la certificación LFCA](https://securitylabs.valentorassa.com/certificaciones/linux-foundation-lfca/),
+que enlaza los labs que preparan cada dominio del examen.
+
+Este repo sigue siendo el vault de estudio original. Las notas están bajo
+CC BY 4.0 y el lab mantiene la atribución.

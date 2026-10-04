@@ -1,6 +1,6 @@
 # linux-study-vault
 
-Personal notes on Linux internals, written while studying for the LFCA certification. Not a tutorial. Not a wiki. Just notes - the kind you write when you're trying to actually understand something, not just memorize it.
+Personal notes on Linux internals that I took while studying for the LFCA certification, which I have since earned. Not a tutorial. Not a wiki. Just notes - the kind you write when you're trying to actually understand something, not just memorize it.
 
 Built as an Obsidian vault. Open the `linux-notes/` folder as a vault.
 

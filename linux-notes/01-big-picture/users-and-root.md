@@ -20,9 +20,29 @@ Every process carries three UIDs:
 
 Most of the time all three are the same. They come apart when a setuid binary runs - `sudo` is the obvious example - or when a process deliberately drops privileges.
 
-## Root is just UID 0
+## Root is UID 0, and UID 0 is a bundle of capabilities
 
-There's no special kernel mode for root. Root is a UID, hardcoded as 0, and the kernel has conditionals scattered through it: `if (euid == 0) skip this check`. That's the whole thing. A root process can read any file, kill any process, load kernel modules, bind to privileged ports, `chroot`, `mount`, modify the system clock. All of those are just checks that UID 0 bypasses.
+There's no special kernel mode for root. Root is a UID, hardcoded as 0, and root processes run in ring 3 like everything else. Early Linux really did have conditionals scattered through it: `if (euid == 0) skip this check`. That stopped being the whole thing in Linux 2.2.
+
+Since then the kernel checks capabilities, not UID 0. Root's power is split into about forty separate privileges, and each check asks for the one it needs:
+
+| Root can... | because it holds |
+|---|---|
+| read or write any file | `CAP_DAC_OVERRIDE` |
+| kill any process | `CAP_KILL` |
+| load kernel modules | `CAP_SYS_MODULE` |
+| bind to ports below 1024 | `CAP_NET_BIND_SERVICE` |
+| `chroot` | `CAP_SYS_CHROOT` |
+| `mount` | `CAP_SYS_ADMIN` |
+| set the system clock | `CAP_SYS_TIME` |
+
+UID 0 still matters because when a process runs a program as UID 0, the kernel hands it the full set. That's a default, not a law, and it comes apart in both directions:
+
+- A process can keep UID 0 and drop capabilities. Root inside a container usually runs with a trimmed set, which is why it can't load a kernel module.
+- A normal user's process can hold one capability and nothing else. `setcap cap_net_bind_service=+ep ./server` lets that binary bind port 80 without ever being root.
+- User namespaces (complete since Linux 3.8) go further: UID 0 inside the namespace maps to an ordinary UID outside it. A rootless container's root is your own UID on the host, and its capabilities only count for resources the namespace owns.
+
+To see what a process actually holds: `grep Cap /proc/$$/status`, then `capsh --decode=<mask>` on a mask.
 
 ## How file permissions work
 
@@ -30,16 +50,27 @@ Every inode stores an owner UID, a group GID, and nine permission bits. When a p
 
 ```mermaid
 flowchart TD
-    A["Process tries to open file"] --> B{"euid == 0?"}
-    B -->|Yes| ALLOW["Allow - root skips permission checks"]
-    B -->|No| C{"euid == file owner UID?"}
-    C -->|Yes| OWN["Apply owner bits rwx------"]
-    C -->|No| D{"egid == file group GID?"}
-    D -->|Yes| GRP["Apply group bits ---rwx---"]
-    D -->|No| OTH["Apply other bits ------rwx"]
+    A["Process tries to open file"] --> B{"fsuid == file owner UID?"}
+    B -->|Yes| OWN["Apply owner bits rwx------"]
+    B -->|No| C{"fsgid or a supplementary group<br/>== file group GID?"}
+    C -->|Yes| GRP["Apply group bits ---rwx---"]
+    C -->|No| OTH["Apply other bits ------rwx"]
+    OWN --> D{"Bits allow it?"}
+    GRP --> D
+    OTH --> D
+    D -->|Yes| ALLOW["Allow"]
+    D -->|No| E{"CAP_DAC_OVERRIDE?<br/>root has it by default"}
+    E -->|Yes| ALLOW
+    E -->|No| DENY["Deny - EACCES"]
 ```
 
-The same logic applies to signals: sending `SIGKILL` to a process you don't own gets refused unless you're root.
+Three details the simple version hides:
+
+- The IDs checked are the filesystem UID and GID (fsuid, fsgid). They follow the effective IDs unless a program changes them with `setfsuid()`, which almost nothing does, so in practice it's the euid.
+- Group means any of your groups: the primary one and every supplementary group `id` lists after `groups=`. That's why adding yourself to a group gives access, after you log in again.
+- Root doesn't skip the check, it fails it and then gets let through by `CAP_DAC_OVERRIDE`. Even that has a limit: executing a file needs at least one `x` bit set somewhere.
+
+Signals have their own rule: you can send `SIGKILL` to a process when your real or effective UID matches its real or saved UID. Anything else needs `CAP_KILL`, which root has.
 
 ## sudo and why it's different from being root
 
@@ -52,7 +83,7 @@ The principle of least privilege is the answer to this: run with only the access
 ## exam-note
 
 > [!exam] LFCA
-> Users = UIDs. Root = UID 0, hardcoded. The kernel checks effective UID for permission decisions. `sudo` gives temporary, logged root access per command. Principle of least privilege: run with minimum necessary permissions.
+> Users = UIDs. Root = UID 0, hardcoded. The kernel checks effective UID for permission decisions, and capabilities for privileged ones; UID 0 gets them all by default. `sudo` gives temporary, logged root access per command. Principle of least privilege: run with minimum necessary permissions.
 
 ## Related
 

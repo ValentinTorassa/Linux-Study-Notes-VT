@@ -1,7 +1,7 @@
 ---
 title: "User Space vs Kernel Space"
 tags: [kernel, user-space, memory, security, kernel-panic]
-related: ["[[levels-of-abstraction]]", "[[kernel-overview]]", "[[system-calls]]"]
+related: ["[[levels-of-abstraction]]", "[[kernel-overview]]", "[[system-calls]]", "[[users-and-root]]"]
 ---
 
 # User Space vs Kernel Space
@@ -28,6 +28,8 @@ Worth noting: Spectre/Meltdown changed this somewhat. KPTI (Kernel Page Table Is
 A process running in user space can't access hardware ports, can't read physical memory, can't touch another process's pages - not because the kernel is checking every memory access, but because the page tables simply don't contain those mappings. The hardware enforces it at the MMU level.
 
 If a process tries anyway - executing a privileged instruction, dereferencing a pointer it doesn't own - the CPU raises a fault. The kernel catches it, sends `SIGSEGV` or `SIGILL` to the offending process, and the process dies. The kernel logs it if you're watching, and moves on.
+
+Root included. Root is a user, not a CPU mode: a root process runs in ring 3 and faults the same way. Anything extra it gets, it gets by asking the kernel, which just says yes more often (see [[users-and-root]]).
 
 This is why a segfault doesn't take down your system. The crashed process never had the access that would have let it do real damage.
 
@@ -59,3 +61,4 @@ A user-space segfault is boring. A kernel panic means the system is gone until r
 - [[levels-of-abstraction]]
 - [[kernel-overview]]
 - [[system-calls]]
+- [[users-and-root]]

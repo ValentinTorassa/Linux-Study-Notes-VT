@@ -1,7 +1,7 @@
 ---
 title: "System Calls and Support"
 tags: [syscalls, kernel, glibc, strace, user-space]
-related: ["[[levels-of-abstraction]]", "[[kernel-overview]]", "[[user-space-vs-kernel-space]]"]
+related: ["[[levels-of-abstraction]]", "[[kernel-overview]]", "[[user-space-vs-kernel-space]]", "[[unix-history]]"]
 ---
 
 # System Calls and Support
@@ -20,7 +20,7 @@ sequenceDiagram
     participant K as Kernel
 
     App->>C: open("file", O_RDONLY)
-    C->>CPU: rax=2, rdi=path, rsi=flags<br/>syscall instruction
+    C->>CPU: rax=257 (openat), rdi=AT_FDCWD,<br/>rsi=path, rdx=flags<br/>syscall instruction
     CPU->>K: ring 3 → ring 0<br/>save user registers
     K->>K: validate, do the work
     K->>CPU: result in rax, sysret
@@ -28,26 +28,29 @@ sequenceDiagram
     C->>App: return fd (or -1, set errno)
 ```
 
-Every syscall has a number. On x86-64: `read`=0, `write`=1, `open`=2, `fork`=57, `execve`=59. The kernel has a table. The number is an index into that table.
+Every syscall has a number. On x86-64: `read`=0, `write`=1, `clone`=56, `execve`=59, `openat`=257. The kernel has a table. The number is an index into that table.
+
+A lot of material still says `open`=2 and `fork`=57. Both syscalls exist, but modern glibc doesn't use them: `open()` calls `openat` with `AT_FDCWD` (meaning "relative to the current directory"), `fork()` calls `clone`, `wait()` calls `wait4`, and `exit()` ends in `exit_group`. Grep an strace of anything current for `open(` and you won't find it.
 
 ## The syscalls worth knowing
 
 | Syscall | What it does |
 |---|---|
-| `open(path, flags)` | Opens a file, returns a file descriptor |
+| `openat(dirfd, path, flags)` | Opens a file, returns a file descriptor. What glibc's `open()` calls |
 | `read(fd, buf, n)` | Reads up to n bytes from fd |
 | `write(fd, buf, n)` | Writes n bytes to fd |
 | `close(fd)` | Releases the file descriptor |
-| `fork()` | Copies the current process. Returns 0 in child, child's PID in parent |
+| `clone(flags, ...)` | Creates a child process (glibc's `fork()` is a `clone`). Returns 0 in child, child's PID in parent |
 | `execve(path, argv, envp)` | Replaces the process image with a new program |
 | `mmap(...)` | Maps memory into address space - this is what `malloc` calls eventually |
-| `exit(status)` | Terminates the process |
+| `wait4(pid, status, ...)` | Waits for a child to finish. What `wait()` and `waitpid()` call |
+| `exit_group(status)` | Terminates the process, every thread of it. What `exit()` ends in |
 
-The fork+exec pattern is how every new program gets launched. The shell forks itself, gets a child process, and calls `execve` in the child to replace it with whatever you typed. The original shell sits there waiting with `wait()`.
+The fork+exec pattern is how every new program gets launched. The shell forks itself, gets a child process, and calls `execve` in the child to replace it with whatever you typed. The original shell sits there waiting with `wait()`. In an strace that's `clone`, then `execve` in the child, then `wait4` in the parent.
 
 ## glibc
 
-You almost never call syscalls directly. glibc wraps all of them - proper C functions, error handling, sets `errno` on failure, returns something sensible. `fopen()` calls `open`. `malloc()` eventually calls `mmap` or `brk`. Python, Ruby, Go - their runtimes are all sitting on top of the same foundation.
+You almost never call syscalls directly. glibc (GNU's C library, see [[unix-history]] for where GNU comes in) wraps all of them - proper C functions, error handling, sets `errno` on failure, returns something sensible. `fopen()` calls `openat`. `malloc()` eventually calls `mmap` or `brk`. Python, Ruby, Go - their runtimes are all sitting on top of the same foundation.
 
 You *can* call syscalls directly using the `syscall()` wrapper in `<unistd.h>` or with inline assembly. It works. It's just non-portable and annoying, and you're giving up everything the library does for you.
 
@@ -73,10 +76,11 @@ Run `strace` on something simple like `ls` and actually read the output. Before 
 ## exam-note
 
 > [!exam] LFCA
-> Syscalls are the user→kernel interface. Know the common ones: `open`, `read`, `write`, `fork`, `execve`. glibc wraps them. `strace` traces live syscall activity on a process.
+> Syscalls are the user→kernel interface. Know the common ones: `open`, `read`, `write`, `fork`, `execve`, and that a modern strace shows `open` as `openat` and `fork` as `clone`. glibc wraps them. `strace` traces live syscall activity on a process.
 
 ## Related
 
 - [[levels-of-abstraction]]
 - [[kernel-overview]]
 - [[user-space-vs-kernel-space]]
+- [[unix-history]]

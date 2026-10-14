@@ -1,7 +1,7 @@
 ---
 title: "Kernel: Process Management, Memory Management, Device Drivers"
 tags: [kernel, processes, memory, device-drivers, monolithic]
-related: ["[[levels-of-abstraction]]", "[[system-calls]]", "[[user-space-vs-kernel-space]]"]
+related: ["[[levels-of-abstraction]]", "[[system-calls]]", "[[user-space-vs-kernel-space]]", "[[users-and-root]]", "[[unix-history]]"]
 ---
 
 # Kernel: Process Management, Memory Management, Device Drivers
@@ -18,10 +18,10 @@ The kernel tracks every process in a structure called `task_struct`. It holds ev
 | State | running / sleeping / stopped / zombie |
 | File descriptors | open files |
 | Memory maps | virtual address space layout |
-| Credentials | UID, GID |
+| Credentials | UID, GID, capabilities (see [[users-and-root]]) |
 | Saved CPU state | registers, for when it's off-CPU |
 
-The scheduler (CFS - Completely Fair Scheduler - by default) picks who runs next based on how much CPU time each process has gotten relative to its weight. When it switches, that's a context switch: save the current process's registers, restore the next process's, jump to where it left off. This happens fast enough - microseconds - that from a human perspective everything runs simultaneously. It doesn't; it just takes turns very quickly.
+The scheduler picks who runs next based on how much CPU time each process has gotten relative to its weight (its nice value). Since Linux 6.6 the default for normal processes is EEVDF (Earliest Eligible Virtual Deadline First). It replaced CFS (Completely Fair Scheduler), the default since 2.6.23 in 2007, which is the name most material still uses. Same fairness idea; EEVDF adds a virtual deadline per task, so a task that asks for short slices gets picked sooner instead of waiting its turn. When it switches, that's a context switch: save the current process's registers, restore the next process's, jump to where it left off. This happens fast enough - microseconds - that from a human perspective everything runs simultaneously. It doesn't; it just takes turns very quickly.
 
 ## Memory management
 
@@ -74,17 +74,19 @@ sequenceDiagram
 
 Linux is monolithic: the scheduler, memory manager, filesystems, network stack, and drivers all live in one block of privileged code. The upside is performance - no context switching between subsystems, no message passing overhead. The downside is that a bad bug anywhere in that block can take down the whole system.
 
-The contrast is a microkernel like Mach or QNX, where most subsystems run as separate user-space processes communicating via IPC. More fault-isolated, but the overhead is real.
+The contrast is a microkernel like Mach or QNX, where most subsystems run as separate user-space processes communicating via IPC. More fault-isolated, but the overhead is real. MINIX, the system Torvalds was using when he started Linux, is a microkernel too (see [[unix-history]]).
 
 Linux's compromise is loadable kernel modules. You can compile a driver separately and load it at runtime with `modprobe` without rebuilding the kernel. But don't mistake this for safety - modules run in ring 0 with full kernel privileges. A broken module panics the system the same as a bug in core kernel code.
 
 ## exam-note
 
 > [!exam] LFCA
-> Three kernel jobs: **process management** (scheduling, context switching), **memory management** (virtual memory, page tables), **device drivers** (hardware abstraction). Linux = monolithic with loadable modules. Not a microkernel. Kernel runs ring 0, user processes ring 3.
+> Three kernel jobs: **process management** (scheduling, context switching; EEVDF since 6.6, CFS before), **memory management** (virtual memory, page tables), **device drivers** (hardware abstraction). Linux = monolithic with loadable modules. Not a microkernel. Kernel runs ring 0, user processes ring 3.
 
 ## Related
 
 - [[levels-of-abstraction]]
 - [[system-calls]]
 - [[user-space-vs-kernel-space]]
+- [[users-and-root]]
+- [[unix-history]]

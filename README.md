@@ -62,6 +62,8 @@ Manifests for five more are versioned, but they are not enabled yet:
 
 Install them through Obsidian → Settings → Community Plugins → Browse. The manifests tell Obsidian which plugins and versions to install; the compiled plugin files are gitignored, so you'll need to reinstall them after cloning.
 
+Two themes are installed. **Everforest**, the active one, is versioned in full. **Blue Topaz** only keeps its `manifest.json`: its CSS embeds Font Awesome Pro icons under a commercial license, so it isn't redistributed here. Install it through Obsidian → Settings → Appearance → Themes if you want it.
+
 ## Notes format
 
 Each note has minimal frontmatter (title, tags, related), prose where the topic has explanation to it, Mermaid diagrams where the concept genuinely needs a visual, an `exam-note` section flagging anything specifically tested on the LFCA, and a closing list of related notes.

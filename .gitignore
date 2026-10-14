@@ -16,3 +16,8 @@
 
 # Personal meta (local only)
 linux-notes/_meta/WRITING-STYLE.md
+
+# Blue Topaz theme CSS (local only): MIT itself, but it embeds Font Awesome
+# Pro icons under a commercial license that doesn't allow redistributing
+# them here. manifest.json stays; install the theme from Obsidian.
+linux-notes/.obsidian/themes/Blue Topaz/theme.css
